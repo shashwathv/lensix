@@ -1,0 +1,92 @@
+: 1753897294:0;python -m venv venv
+: 1753897312:0;source venv/bin/activate
+: 1753897351:0;pip install Pillow pytesseract
+: 1753897360:0;/home/guts/Projects/circle_to_search/.venv/bin/python -m pip install Pillow pytesseract
+: 1753897382:0;code search.py
+: 1753897516:0;python search.py
+: 1753897641:0;clear
+: 1753897643:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1753897649:0;python search.py
+: 1753898354:0;pip install playwright
+: 1753898385:0;playwright install
+: 1753899401:0;clear
+: 1753899407:0;python search.py
+: 1753900026:0;code wrapper.sh
+: 1753900213:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1753901091:0;pip install pyautogui
+: 1753901151:0;python search.py
+: 1753934716:0;clear
+: 1753934781:0;python search.py
+: 1753935230:0;clear
+: 1753935247:0;python search.py
+: 1753935476:0;clear
+: 1753935531:0;python search.py
+: 1753935763:0;clear
+: 1753935764:0;python search.py
+: 1753936130:0;clear
+: 1753936148:0;python search.py
+: 1753936300:0;clear
+: 1753936304:0;python search.py
+: 1753936567:0;clear
+: 1753936582:0;python search.py
+: 1753936776:0;clear
+: 1753936778:0;pip install opencv-python numpy pytesseract pillow playwright
+: 1753936871:0;playwright install
+: 1753936954:0;pip install numpy
+: 1753936970:0;pip install cv2
+: 1753936977:0;clear
+: 1753936980:0;python search.py
+: 1753937068:0;clear
+: 1753937075:0;python search.py
+: 1753937906:0;pip install opencv-python pytesseract numpy
+: 1753937950:0;clear
+: 1753937952:0;python search.py
+: 1753937968:0;clear
+: 1753937970:0;python search.py
+: 1753938259:0;clear
+: 1753938263:0;python search.py
+: 1753938296:0;clear
+: 1753938297:0;python search.py
+: 1753938738:0;clear
+: 1753938739:0;python search.py
+: 1753938804:0;clear
+: 1753938805:0;python search.py
+: 1753945097:0;clear
+: 1753945811:0;python search.py
+: 1753946166:0;clear
+: 1753946168:0;python search.py
+: 1753946184:0;clear
+: 1753946185:0;python search.py
+: 1753947423:0;pip install opencv-python
+: 1753947437:0;clear
+: 1753947442:0;python search.py
+: 1753947577:0;clear
+: 1753947578:0;python search.py
+: 1753947755:0;clear
+: 1753947758:0;python search.py
+: 1753947775:0;clear
+: 1753947778:0;python search.py
+: 1753947848:0;clear
+: 1753947849:0;python search.py
+: 1753947893:0;clear
+: 1753947894:0;python search.py
+: 1753948115:0;clear
+: 1753948237:0;echo "# search" >> README.md
+: 1753948246:0;git init
+: 1753948260:0;git add README.md
+: 1753948271:0;\
+git commit -m "first commit"
+: 1753948280:0;git branch -M main
+: 1753948288:0;git remote add origin https://github.com/shashwathv/search.git
+: 1753948298:0;git push -u origin main
+: 1753948399:0;git status
+: 1753948438:0;git add .
+: 1753948575:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1753948590:0;deactivate
+: 1753948624:0;mkdir .gitignore
+: 1753948631:0;code .gitignore
+: 1753948674:0;cd .gitignore
+: 1753948764:0;ls
+: 1753948774:0;touch .gitignore
+: 1753948826:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1753948861:0;git add .
