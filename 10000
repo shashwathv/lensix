@@ -90,3 +90,6 @@ git commit -m "first commit"
 : 1753948774:0;touch .gitignore
 : 1753948826:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
 : 1753948861:0;git add .
+: 1753948889:0;git status
+: 1753948949:0;git commit -m "first commit"
+: 1753949058:0;git commit . -m "something"
