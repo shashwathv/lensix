@@ -93,3 +93,59 @@ git commit -m "first commit"
 : 1753948889:0;git status
 : 1753948949:0;git commit -m "first commit"
 : 1753949058:0;git commit . -m "something"
+: 1753949123:0;clear
+: 1753966963:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1753966972:0;deactivate
+: 1753966974:0;clear
+: 1753966977:0;cd ..
+: 1753967897:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1753967906:0;deactivate
+: 1753967908:0;clear
+: 1753967909:0;cd ..
+: 1754976513:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1754977034:0;python search.py
+: 1754977159:0;pip install pip
+: 1754977170:0;pip install --upgrade pip
+: 1754977196:0;pip install -upgrade playwright
+: 1754977206:0;pip install --upgrade playwright
+: 1754977224:0;clea
+: 1754977226:0;clear
+: 1754977684:0;python search.py
+: 1754977730:0;clear
+: 1754977835:0;python search.py
+: 1754977850:0;clear
+: 1754978159:0;python search.py
+: 1754978168:0;clear
+: 1754978170:0;python search.py
+: 1754978187:0;source /venv/bin/activate
+: 1754978202:0;python search.py
+: 1754978238:0;celar
+: 1754978258:0;clear
+: 1754978535:0;python search.py
+: 1754978907:0;clear
+: 1754978909:0;python search.py
+: 1754979038:0;clear
+: 1754979040:0;python search.py
+: 1754979072:0;clear
+: 1754979073:0;python search.py
+: 1754979103:0;clear
+: 1754979105:0;python search.py
+: 1754979119:0;clear
+: 1754979126:0;python search.py
+: 1754979200:0;clear
+: 1755051095:0;python search.py
+: 1755051103:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1755051117:0;python search.py
+: 1755051590:0;clear
+: 1755051592:0;python search.py
+: 1755051916:0;clear
+: 1755051917:0;python search.py
+: 1755051978:0;clear
+: 1755051979:0;python search.py
+: 1755052120:0;clear
+: 1755052121:0;python search.py
+: 1755052151:0;clear
+: 1755052152:0;python search.py
+: 1755052168:0;clear
+: 1755052169:0;python search.py
+: 1755052186:0;clear
