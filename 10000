@@ -149,3 +149,32 @@ git commit -m "first commit"
 : 1755052168:0;clear
 : 1755052169:0;python search.py
 : 1755052186:0;clear
+: 1755059237:0;cd source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1755059237:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1755059241:0;deactivate
+: 1755059245:0;cd ..
+: 1755059302:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1755500605:0;python search.py
+: 1755625429:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1755625438:0;clear
+: 1755626025:0;pip install PyQt6 mss pyperclip
+: 1755626118:0;python search.py
+: 1755626273:0;clear
+: 1755626280:0;python search.py
+: 1755626534:0;clear
+: 1755626534:0;python search.py
+: 1755656396:0;source /home/guts/Projects/circle_to_search/.venv/bin/activate
+: 1755656545:0;clear
+: 1755656565:0;python search.py
+: 1755656590:0;xhost +SI:localuser:$(whoami)
+: 1755656605:0;python search.py
+: 1755656755:0;clear
+: 1755656814:0;python search.py
+: 1755657048:0;clear
+: 1755657051:0;python search.py
+: 1755666106:0;clear
+: 1755666126:0;python search.py
+: 1755666167:0;clear
+: 1755666172:0;python search.py
+: 1755666224:0;clear
+: 1755666508:0;python search.py
