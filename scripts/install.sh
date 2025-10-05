@@ -33,13 +33,18 @@ if [ ${#missing_deps[@]} -ne 0 ]; then
     exit 1
 fi
 
-# --- Python Dependency Installation ---
-echo "Installing Python dependencies via pip..."
-pip install -r requirements.txt
+# --- Create Virtual Environment ---
+echo "Creating a dedicated virtual environment..."
+python3 -m venv .venv
 
-# --- Playwright Browser Installation ---
+# --- Python Dependency Installation (inside the venv) ---
+echo "Installing Python dependencies into the virtual environment..."
+# We call the pip from the venv directly to be safe
+./.venv/bin/pip install -r requirements.txt
+
+# --- Playwright Browser Installation (using the venv's playwright) ---
 echo "Installing Playwright browser binaries (this might take a moment)..."
-playwright install
+./.venv/bin/playwright install
 
 # --- Make Symlink for global command ---
 echo "Creating the 'lensix' command in /usr/local/bin..."

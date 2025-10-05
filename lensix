@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# Find the directory where the script is located
+# Find the directory where this script is located
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# Run the python script
-python3 "${SCRIPT_DIR}/search.py" "$@"
+# Define the path to the Python interpreter inside our virtual environment
+VENV_PYTHON="${SCRIPT_DIR}/.venv/bin/python3"
+
+# Run the python script using the virtual environment's Python
+"$VENV_PYTHON" "${SCRIPT_DIR}/search.py" "$@"
