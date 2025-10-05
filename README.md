@@ -25,4 +25,4 @@ lensix
 
 ---
 
-**A Note on Security:** This method involves piping a script from the internet directly into your shell. This requires that you trust the source of the script. We recommend inspecting the `bootstrap.sh` script on GitHub before running the command if you have any concerns.
+**A Note on Security:** This method involves piping a script from the internet directly into your shell. This requires that you trust the source of the script. I recommend inspecting the `bootstrap.sh` script on GitHub before running the command if you have any concerns.
