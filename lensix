@@ -1,10 +1,24 @@
 #!/usr/bin/env bash
 
-# Find the directory where this script is located
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+# This is a robust method to find the script's real directory, following symlinks
+SOURCE=${BASH_SOURCE[0]}
+while [ -L "$SOURCE" ]; do
+  DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+  SOURCE=$(readlink "$SOURCE")
+  [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE
+done
+SCRIPT_DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+
 
 # Define the path to the Python interpreter inside our virtual environment
 VENV_PYTHON="${SCRIPT_DIR}/.venv/bin/python3"
+
+# Check if the venv python exists. If not, the installation is likely broken.
+if [ ! -f "$VENV_PYTHON" ]; then
+    echo "Error: The Python virtual environment is missing. Please try re-installing."
+    echo "Expected Python at: $VENV_PYTHON"
+    exit 1
+fi
 
 # Run the python script using the virtual environment's Python
 "$VENV_PYTHON" "${SCRIPT_DIR}/search.py" "$@"
