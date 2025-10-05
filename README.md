@@ -14,7 +14,7 @@ On Debian/Ubuntu, you can install them with: `sudo apt install git curl`
 Open your terminal and run the following command:
 
 ```bash
-bash -c "$(curl -fsSL [https://raw.githubusercontent.com/shashwathv/lensix/main/scripts/bootstrap.sh](https://raw.githubusercontent.com/shashwathv/lensix/main/scripts/bootstrap.sh))"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/shashwathv/lensix/main/scripts/bootstrap.sh)"
 ```
 
 After the installation is complete, you can run the program from any terminal by simply typing:
