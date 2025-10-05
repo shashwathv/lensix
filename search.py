@@ -1,20 +1,5 @@
 #!/usr/bin/env python3
 
-# ==============================================================================
-#  Circle to Search for Linux (v5.4) - Google-Style Implementation
-# ==============================================================================
-#
-# Features:
-#   - Google-like UI with smooth animations and visual effects
-#   - Cross-platform compatibility for all Linux distributions
-#   - Smart screenshot capture with multiple fallback methods
-#   - Enhanced OCR with multi-language support and multiple preprocessing strategies
-#   - Visual search with Google Lens integration (with persistent login)
-#   - Modern overlay with blur effects and animations
-#   - Touch and mouse gesture support
-#
-# ==============================================================================
-
 import os
 import subprocess
 import sys
