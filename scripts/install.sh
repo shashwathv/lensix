@@ -5,31 +5,73 @@ set -e
 
 echo "--- Installing Lensix Dependencies ---"
 
-# --- Function to check if a command exists ---
-command_exists() {
-    command -v "$1" &> /dev/null
-}
-
-# --- System Dependency Check ---
+# --- Distro Detection & Package Definition ---
 echo "Checking for system dependencies..."
-# We list the packages needed for Python, OCR, and various screenshot tools
-REQUIRED_PKGS="python3 python3-pip tesseract-ocr scrot grim gnome-screenshot spectacle"
-MISSING_PKGS=()
+PKG_MANAGER=""
+INSTALL_CMD=""
+declare -A PKGS
 
-# Using dpkg-query is a reliable way to check for installed packages on Debian-based systems
-for PKG in $REQUIRED_PKGS; do
-    if ! dpkg-query -W -f='${Status}' "$PKG" 2>/dev/null | grep -q "ok installed"; then
-        MISSING_PKGS+=("$PKG")
+if command -v pacman &> /dev/null; then
+    echo "Detected Arch-based Linux (using pacman)."
+    PKG_MANAGER="pacman"
+    # Note: On Arch, python-pip provides 'pip'. tesseract-data-eng provides English data.
+    PKGS=(
+        ["python"]="python-pip"
+        ["tesseract"]="tesseract"
+        ["eng.traineddata"]="tesseract-data-eng"
+        ["scrot"]="scrot"
+        ["grim"]="grim"
+        ["gnome-screenshot"]="gnome-screenshot"
+        ["spectacle"]="spectacle"
+    )
+    INSTALL_CMD="sudo pacman -Syu --noconfirm"
+elif command -v apt &> /dev/null; then
+    echo "Detected Debian-based Linux (using apt)."
+    PKG_MANAGER="apt"
+    PKGS=(
+        ["python3"]="python3"
+        ["pip"]="python3-pip"
+        ["tesseract"]="tesseract-ocr"
+        ["eng.traineddata"]="tesseract-ocr-eng"
+        ["scrot"]="scrot"
+        ["grim"]="grim"
+        ["gnome-screenshot"]="gnome-screenshot"
+        ["spectacle"]="spectacle"
+    )
+    INSTALL_CMD="sudo apt update && sudo apt install"
+else
+    echo "Error: Could not detect a supported package manager (apt or pacman)."
+    exit 1
+fi
+
+# --- Dependency Check ---
+MISSING_PKGS=()
+for CMD_OR_FILE in "${!PKGS[@]}"; do
+    PKG_NAME=${PKGS[$CMD_OR_FILE]}
+    IS_INSTALLED=false
+    if [[ "$PKG_MANAGER" == "pacman" ]]; then
+        # For pacman, we just check if the package is installed
+        if pacman -Q "$PKG_NAME" &> /dev/null; then
+            IS_INSTALLED=true
+        fi
+    elif [[ "$PKG_MANAGER" == "apt" ]]; then
+        if dpkg-query -W -f='${Status}' "$PKG_NAME" 2>/dev/null | grep -q "ok installed"; then
+            IS_INSTALLED=true
+        fi
+    fi
+
+    if ! $IS_INSTALLED; then
+        MISSING_PKGS+=("$PKG_NAME")
     fi
 done
 
 if [ ${#MISSING_PKGS[@]} -ne 0 ]; then
     echo "Error: Missing system dependencies. Please install them first."
-    echo "On Debian/Ubuntu, you can use the following command:"
-    # The tr command replaces spaces with spaces, which cleans up any extra spacing
-    echo "sudo apt update && sudo apt install $(echo ${MISSING_PKGS[@]} | tr ' ' ' ')"
+    echo "You can use the following command:"
+    echo "$INSTALL_CMD ${MISSING_PKGS[*]}"
     exit 1
 fi
+
 
 # --- Create Virtual Environment ---
 echo "Creating a dedicated virtual environment..."
