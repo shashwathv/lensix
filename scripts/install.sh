@@ -1,102 +1,143 @@
 #!/usr/bin/env bash
-
-# Stop on first error
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
 echo "--- Installing Lensix Dependencies ---"
 
-# --- Distro Detection & Package Definition ---
-echo "Checking for system dependencies..."
+# Ensure we're in repo root (where lensix & requirements.txt live)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "${REPO_ROOT}"
+
+# --- Basic sanity checks ---
+[[ -f "lensix" ]] || { echo "Error: 'lensix' launcher not found in ${REPO_ROOT}"; exit 1; }
+[[ -f "requirements.txt" ]] || { echo "Error: 'requirements.txt' not found in ${REPO_ROOT}"; exit 1; }
+
+# --- Distro detection & package lists ---
 PKG_MANAGER=""
 INSTALL_CMD=""
-declare -A PKGS
+declare -a PKGS
 
-if command -v pacman &> /dev/null; then
-    echo "Detected Arch-based Linux (using pacman)."
-    PKG_MANAGER="pacman"
-    # Note: On Arch, python-pip provides 'pip'. tesseract-data-eng provides English data.
-    PKGS=(
-        ["python"]="python-pip"
-        ["tesseract"]="tesseract"
-        ["eng.traineddata"]="tesseract-data-eng"
-        ["scrot"]="scrot"
-        ["grim"]="grim"
-        ["gnome-screenshot"]="gnome-screenshot"
-        ["spectacle"]="spectacle"
-    )
-    INSTALL_CMD="sudo pacman -Syu --noconfirm"
-elif command -v apt &> /dev/null; then
-    echo "Detected Debian-based Linux (using apt)."
-    PKG_MANAGER="apt"
-    PKGS=(
-        ["python3"]="python3"
-        ["pip"]="python3-pip"
-        ["tesseract"]="tesseract-ocr"
-        ["eng.traineddata"]="tesseract-ocr-eng"
-        ["scrot"]="scrot"
-        ["grim"]="grim"
-        ["gnome-screenshot"]="gnome-screenshot"
-        ["spectacle"]="spectacle"
-    )
-    INSTALL_CMD="sudo apt update && sudo apt install"
+if command -v pacman >/dev/null 2>&1; then
+  echo "Detected Arch-based Linux (pacman)."
+  PKG_MANAGER="pacman"
+  # Arch package names
+  PKGS=(
+    python            # provides venv on Arch
+    python-pip
+    tesseract
+    tesseract-data-eng
+    scrot
+    grim
+    slurp
+    gnome-screenshot
+    spectacle
+    wl-clipboard
+    xdg-desktop-portal
+    xdg-desktop-portal-gtk
+  )
+  INSTALL_CMD="sudo pacman -S --needed --noconfirm"
+elif command -v apt >/dev/null 2>&1; then
+  echo "Detected Debian/Ubuntu (apt)."
+  PKG_MANAGER="apt"
+  PKGS=(
+    python3
+    python3-pip
+    python3-venv
+    tesseract-ocr
+    tesseract-ocr-eng
+    scrot
+    grim
+    slurp
+    gnome-screenshot
+    kde-spectacle
+    wl-clipboard
+    xdg-desktop-portal
+    xdg-desktop-portal-gtk
+  )
+  INSTALL_CMD="sudo apt update && sudo apt install -y"
 else
-    echo "Error: Could not detect a supported package manager (apt or pacman)."
-    exit 1
+  echo "Error: supported package manager not found (need apt or pacman)."
+  exit 1
 fi
 
-# --- Dependency Check ---
-MISSING_PKGS=()
-for CMD_OR_FILE in "${!PKGS[@]}"; do
-    PKG_NAME=${PKGS[$CMD_OR_FILE]}
-    IS_INSTALLED=false
-    if [[ "$PKG_MANAGER" == "pacman" ]]; then
-        # For pacman, we just check if the package is installed
-        if pacman -Q "$PKG_NAME" &> /dev/null; then
-            IS_INSTALLED=true
-        fi
-    elif [[ "$PKG_MANAGER" == "apt" ]]; then
-        if dpkg-query -W -f='${Status}' "$PKG_NAME" 2>/dev/null | grep -q "ok installed"; then
-            IS_INSTALLED=true
-        fi
-    fi
+# --- Detect missing packages ---
+MISSING=()
+case "$PKG_MANAGER" in
+  pacman)
+    for p in "${PKGS[@]}"; do
+      pacman -Qi "$p" >/dev/null 2>&1 || MISSING+=("$p")
+    done
+    ;;
+  apt)
+    for p in "${PKGS[@]}"; do
+      dpkg-query -W -f='${Status}' "$p" 2>/dev/null | grep -q "ok installed" || MISSING+=("$p")
+    done
+    ;;
+esac
 
-    if ! $IS_INSTALLED; then
-        MISSING_PKGS+=("$PKG_NAME")
-    fi
-done
-
-if [ ${#MISSING_PKGS[@]} -ne 0 ]; then
-    echo "Error: Missing system dependencies. Please install them first."
-    echo "You can use the following command:"
-    echo "$INSTALL_CMD ${MISSING_PKGS[*]}"
-    exit 1
+if (( ${#MISSING[@]} > 0 )); then
+  echo "Missing system dependencies:"
+  printf '  - %s\n' "${MISSING[@]}"
+  echo
+  echo "Install with:"
+  echo "  $INSTALL_CMD ${MISSING[*]}"
+  exit 1
 fi
 
+# --- Create or reuse venv ---
+if [[ ! -d ".venv" ]]; then
+  echo "Creating virtual environment..."
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -m venv .venv
+  else
+    python -m venv .venv
+  fi
+else
+  echo "Reusing existing virtual environment (.venv)"
+fi
 
-# --- Create Virtual Environment ---
-echo "Creating a dedicated virtual environment..."
-python3 -m venv .venv
+echo "Upgrading pip/setuptools/wheel..."
+./.venv/bin/python -m pip install --upgrade pip setuptools wheel
 
-# --- Python Dependency Installation (inside the venv) ---
-echo "Installing Python dependencies into the virtual environment..."
+echo "Installing Python dependencies..."
 ./.venv/bin/pip install -r requirements.txt
 
-# --- Playwright Browser Installation (using the venv's playwright) ---
-echo "Installing Playwright browser binaries (this might take a moment)..."
-./.venv/bin/playwright install
-
-# --- Make Symlink for global command ---
-echo "Creating the 'lensix' command in /usr/local/bin..."
-INSTALL_DIR=$(pwd)
-LAUNCHER_PATH="${INSTALL_DIR}/lensix"
-
-if [ -L "/usr/local/bin/lensix" ]; then
-    sudo rm "/usr/local/bin/lensix"
+# If Playwright is in requirements, install browsers
+if ./.venv/bin/python -c "import importlib,sys; sys.exit(0 if importlib.util.find_spec('playwright') else 1)"; then
+  echo "Installing Playwright browsers..."
+  ./.venv/bin/playwright install
 fi
-sudo ln -sf "$LAUNCHER_PATH" /usr/local/bin/lensix
 
-echo ""
-echo "✅ Installation Complete!"
-echo ""
-echo "You can now run the program from anywhere by typing:"
-echo "lensix"
+# --- Make 'lensix' available on PATH ---
+echo "Creating the 'lensix' launcher symlink..."
+
+chmod +x "${REPO_ROOT}/lensix"
+
+CANDIDATES=("${HOME}/.local/bin" "/usr/local/bin")
+TARGET_BIN=""
+
+for d in "${CANDIDATES[@]}"; do
+  mkdir -p "$d" 2>/dev/null || true
+  if [[ -w "$d" ]]; then TARGET_BIN="$d"; break; fi
+done
+
+LINK_TARGET="${TARGET_BIN:-/usr/local/bin}/lensix"
+if [[ -n "$TARGET_BIN" ]]; then
+  ln -sf "${REPO_ROOT}/lensix" "$LINK_TARGET"
+  echo "Linked: $LINK_TARGET -> ${REPO_ROOT}/lensix"
+  case ":$PATH:" in
+    *:"$TARGET_BIN":*) : ;;
+    *) echo "NOTE: $TARGET_BIN is not on PATH. Add:"
+       echo "  export PATH=\"$TARGET_BIN:\$PATH\""
+       ;;
+  esac
+else
+  echo "No writable bin dir; using sudo for /usr/local/bin..."
+  sudo mkdir -p /usr/local/bin
+  sudo ln -sf "${REPO_ROOT}/lensix" /usr/local/bin/lensix
+  echo "Linked: /usr/local/bin/lensix -> ${REPO_ROOT}/lensix"
+fi
+
+echo
+echo "✅ Installation Complete. Run:  lensix"

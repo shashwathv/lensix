@@ -1,41 +1,36 @@
 #!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
 
-# Stop on first error
-set -e
+# --- Config ---
+GITHUB_REPO="shashwathv/lensix"
+INSTALL_DIR="${HOME}/.local/share/lensix"
 
-# --- Configuration ---
-# IMPORTANT: CHANGE THIS TO YOUR GITHUB USERNAME AND REPOSITORY NAME
-GITHUB_REPO="shashwathv/lensix" 
-INSTALL_DIR="$HOME/.local/share/lensix"
-
-# --- Welcome Message ---
 echo "Bootstrapping Lensix installation..."
-echo "Target repository: $GITHUB_REPO"
-echo "Installation directory: $INSTALL_DIR"
-echo ""
+echo "Target repository: ${GITHUB_REPO}"
+echo "Installation directory: ${INSTALL_DIR}"
+echo
 
-# --- Dependency Check ---
-if ! command -v git &> /dev/null; then
-    echo "Error: git is not installed. Please install git and try again."
-    exit 1
-fi
+command -v git >/dev/null 2>&1 || { echo "Error: git not found. Install git and retry."; exit 1; }
 
-# --- Clone or Update Repository ---
-if [ -d "$INSTALL_DIR" ]; then
-    echo "Existing installation found. Updating..."
-    cd "$INSTALL_DIR"
-    git pull
+mkdir -p "$(dirname "${INSTALL_DIR}")"
+
+if [ -d "${INSTALL_DIR}/.git" ]; then
+  echo "Existing git installation found. Updating..."
+  git -C "${INSTALL_DIR}" fetch --tags --prune
+  git -C "${INSTALL_DIR}" pull --ff-only
 else
-    echo "Cloning repository..."
-    git clone "https://github.com/$GITHUB_REPO.git" "$INSTALL_DIR"
+  if [ -d "${INSTALL_DIR}" ]; then
+    echo "Existing non-git directory found at ${INSTALL_DIR}."
+    BAK="${INSTALL_DIR}.bak.$(date +%s)"
+    echo "Moving it to ${BAK} ..."
+    mv "${INSTALL_DIR}" "${BAK}"
+  fi
+  echo "Cloning repository..."
+  git clone --depth 1 "https://github.com/${GITHUB_REPO}.git" "${INSTALL_DIR}"
 fi
 
-# --- Run Main Installer ---
 echo "Running the main installer..."
-cd "$INSTALL_DIR"
+cd "${INSTALL_DIR}"
 chmod +x scripts/install.sh
-./scripts/install.sh
-
-# --- Success Message ---
-echo ""
-echo "Bootstrap complete. Please follow any further instructions from the installer."
+exec ./scripts/install.sh
