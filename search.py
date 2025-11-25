@@ -493,11 +493,24 @@ def capture_with_command_line_tools(output_path: Path) -> bool:
     """Try various command-line screenshot tools"""
     
     tools = [
-        # For GNOME Wayland, gnome-screenshot is most reliable
+        # For modern GNOME Wayland, DBus is the most reliable non-interactive method.
+        # This calls the GNOME Shell's screenshot service directly, avoiding issues
+        # with gnome-screenshot's interactive-only mode in recent versions.
+        ([
+            "dbus-send",
+            "--session",
+            "--dest=org.gnome.Shell",
+            "/org/gnome/Shell/Screenshot",
+            "org.gnome.Shell.Screenshot.Screenshot",
+            "boolean:false", # include_pointer
+            "boolean:false", # flash
+            f"string:{output_path}"
+        ], "gnome-dbus"),
+        # Fallback for older GNOME or if DBus fails
         (["gnome-screenshot", "-f", str(output_path)], "gnome-screenshot"),
-        # grim for other Wayland compositors
+        # grim for other Wayland compositors (Sway, etc.)
         (["grim", str(output_path)], "grim"),
-        # spectacle for KDE
+        # spectacle for KDE Plasma
         (["spectacle", "-b", "-n", "-o", str(output_path)], "spectacle"),
         # X11 fallbacks
         (["scrot", str(output_path)], "scrot"),
