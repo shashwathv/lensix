@@ -1,5 +1,5 @@
 """
-Lensix OCR
+KenXSearch OCR
 Multi-strategy text extraction using Tesseract + OpenCV preprocessing.
 """
 

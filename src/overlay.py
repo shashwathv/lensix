@@ -1,5 +1,5 @@
 """
-Lensix Overlay UI
+KenXSearch Overlay UI
 Full-screen drawing overlay, search panel, and animated selection ring.
 """
 

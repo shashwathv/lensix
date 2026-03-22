@@ -1,5 +1,5 @@
 """
-Lensix Entry Point
+KenXSearch Entry Point
 Dependency checking and application startup.
 """
 

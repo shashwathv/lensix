@@ -7,7 +7,7 @@ from typing import List
 
 @dataclass
 class Config:
-    """All configuration settings for Lensix."""
+    """All configuration settings for KenXSearch."""
     use_freeform_selection: bool = True
     wayland: bool = os.getenv('XDG_SESSION_TYPE', '').lower() == 'wayland'
     desktop: str = os.getenv('XDG_CURRENT_DESKTOP', '').lower()
