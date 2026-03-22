@@ -133,13 +133,22 @@ def upload_to_google_lens(mode: str = "search"):
             pass
         page.wait_for_timeout(3000)
 
-        # Shopping: click the Shopping tab in Lens results
+        # Shopping: click the Products/Shopping tab in Lens results
+        # Google Lens labels this tab "Products" not "Shopping"
         if mode == "shopping":
             try:
-                tab = page.get_by_text("Shopping", exact=False)
-                tab.wait_for(timeout=5000)
-                tab.click()
-                page.wait_for_timeout(2000)
+                # Try "Products" first (current Google Lens label)
+                for label in ["Products", "Shopping", "Buy"]:
+                    try:
+                        tab = page.get_by_role("tab", name=label)
+                        if not tab.is_visible():
+                            tab = page.get_by_text(label, exact=True)
+                        tab.wait_for(timeout=4000)
+                        tab.click()
+                        page.wait_for_timeout(2000)
+                        break
+                    except Exception:
+                        continue
             except Exception:
                 pass
 
