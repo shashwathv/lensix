@@ -1,5 +1,5 @@
 """
-Lensix Google Lens Integration
+KenXSearch Google Lens Integration
 Handles all search dispatch and Google Lens browser automation.
 """
 
